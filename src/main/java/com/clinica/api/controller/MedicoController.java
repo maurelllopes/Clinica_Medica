@@ -36,30 +36,41 @@ public class MedicoController {
     // Injeção de dependência para o repositório de médicos (MedicoRepository)
     @Autowired
     private MedicoRepository repository;
-
-    @PostMapping
-    @Transactional
+    // Endpoint POST para cadastrar um novo médico
+    @PostMapping 
+    @Transactional // Transação para garantir que a operação de salvar seja atômica
     public void cadastrar(@RequestBody @Valid DadosCadastroMedico dados){
+    // Cria um novo médico com os dados fornecidos e o salva no banco de dados
         repository.save(new Medico(dados));
     }
+    // Endpoint GET para listar todos os médicos
     @GetMapping
     public List<DadosListagemMedico> listar() {
-        return repository.findAll().stream().map(DadosListagemMedico::new).toList();
+        // Recupera todos os médicos e os converte para um formato de listagem adequado
+        return repository.findAll().stream()
+        .map(DadosListagemMedico::new)// Converte cada médico para um objeto de listagem
+        .toList();// Retorna a lista
 
     }
-
+    // Endpoint GET para editar as informações de um médico (formulário)
      @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
+         // Procura o médico pelo ID, se não encontrar, lança uma exceção
         Medico medico = repository.findById(id).orElseThrow(() -> new RuntimeException("Médico não encontrado"));
+        // Adiciona o médico ao modelo para ser exibido na página
         model.addAttribute("medico", medico);
+        // Retorna a visão (página) de edição do médico
         return "editar"; // Página para editar médico
     }
-
+    // Endpoint POST para atualizar as informações de um médico
     @PostMapping("/editar")
     @Transactional
     public String atualizar(@ModelAttribute DadosAtualizacaoMedico dados) {
+        // Recupera o médico pela ID fornecida
         var medico = repository.getReferenceById(dados.id());
+        // Atualiza as informações do médico com os novos dados
         medico.atualizarInformacoes(dados);
+        // Redireciona para a lista de médicos após a atualização
         return "redirect:/medicos"; // Redireciona para a listagem
     }
 
@@ -69,6 +80,7 @@ public class MedicoController {
         repository.deleteById(id);
 
     }
+    // Endpoint PATCH para desativar um médico
     @PatchMapping("/desativar/{id}")
 @Transactional
 public String desativar(@PathVariable Long id, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "8") int size, HttpServletResponse response) throws IOException {
@@ -81,7 +93,7 @@ public String desativar(@PathVariable Long id, @RequestParam(defaultValue = "1")
     // Salvar o médico desativado
     repository.save(medicoDesativado);
     
-    // Realizar o redirecionamento com os parâmetros
+    // Realiza o redirecionamento para a listagem de médicos com os parâmetros de paginação
     response.sendRedirect("/listagem?page=" + page + "&size=" + size);
     return null;  // Esse return pode ser nulo porque o redirecionamento é feito diretamente
 }
