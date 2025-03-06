@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Médicos</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #69BCF8;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            margin-right: 10px; /* Adicionando margem entre os botões */
+        }
+
+        .btn-edit:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background-color: #d9f2ff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        table td {
+            text-align: center;
+            padding: 10px;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #69BCF8;
+            color: white;
+        }
+
+        .desativado {
+            opacity: 0.5;
+            background-color: #f0f0f0;
+            color: #ccc;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center text-white">Lista de Médicos</h2>
+        <div class="card">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="medico : ${pagina.content}" 
+                        th:classappend="${!medico.ativo} ? 'desativado' : ''">
+                        <td th:text="${medico.nome}"></td>
+                        <td th:text="${medico.email}"></td>
+                        <td th:text="${medico.telefone}"></td>
+                        <td>
+                            <!-- Botões de Ação -->
+                            <div class="d-flex justify-content-center">
+                                <!-- Botão de Editar -->
+                                <a th:href="@{/editar/{id}(id=${medico.id})}" class="btn btn-warning btn-edit">Editar</a>
+
+                                <!-- Botão de Desativar -->
+                                <form th:action="@{/medicos/desativar/{id}(id=${medico.id})}" method="post">
+                                    <!-- Campo oculto para simular PATCH -->
+                                    <input type="hidden" name="_method" value="PATCH">
+                                    <button type="submit" th:disabled="${!medico.ativo}" 
+                                            th:text="${medico.ativo ? 'Desativar' : 'Ativado'}" 
+                                            class="btn btn-danger"></button>
+                                </form>
+                                
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Botões de Paginação -->
+            <div class="text-center mt-3">
+                <a th:if="${pagina.hasPrevious()}" 
+                   th:href="@{/listagem(page=${pagina.number - 1}, size=${pagina.size})}" 
+                   class="btn btn-secondary">Anterior</a>
+
+                <span>Página <span th:text="${pagina.number + 1}"></span> de <span th:text="${pagina.totalPages}"></span></span>
+
+                <a th:if="${pagina.hasNext()}" 
+                   th:href="@{/listagem(page=${pagina.number + 1}, size=${pagina.size})}" 
+                   class="btn btn-secondary">Próxima</a>
+            </div>
+
+            <a href="/cadastro" class="btn btn-primary btn-block mt-3">Cadastrar Novo Médico</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
