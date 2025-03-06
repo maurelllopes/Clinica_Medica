@@ -1,5 +1,7 @@
+// Pacote que contém os controladores da API da clínica
 package com.clinica.api.controller;
 
+// Importação de bibliotecas e classes necessárias
 import java.io.IOException;
 import java.util.List;
 
@@ -25,11 +27,13 @@ import com.clinica.api.medico.MedicoRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
-
+// Anotação que indica que esta é uma classe de controlador de API REST
 @RestController
+// Define o endpoint base para todas as requisições neste controlador
 @RequestMapping("medicos")
 
 public class MedicoController {
+    // Injeção de dependência para o repositório de médicos (MedicoRepository)
     @Autowired
     private MedicoRepository repository;
 
